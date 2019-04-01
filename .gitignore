@@ -1,0 +1,6 @@
+.env
+*.swo
+*.swp
+*.pb.go
+.vscode/*
+debug
