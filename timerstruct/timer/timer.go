@@ -6,16 +6,13 @@ import (
 )
 
 type Timer struct {
-	Timeout int
-	Reset   chan bool
+	Reset chan bool
 }
 
 func New() Timer {
-	Timeout := 100
 	Reset := make(chan bool)
 
 	t := Timer{
-		Timeout,
 		Reset,
 	}
 
@@ -23,17 +20,28 @@ func New() Timer {
 }
 
 func (t *Timer) StartTimer() {
-	timer := time.NewTimer(time.Duration(t.Timeout) * time.Millisecond)
+	const timeout = 100 * time.Millisecond
+	tim := time.NewTimer(timeout)
 
-	go func() {
-		for {
-			select {
-			case <-t.Reset:
-				timer.Reset(time.Duration(t.Timeout) * time.Millisecond)
-				continue
-			case <-timer.C:
-				fmt.Println("timer trigerred.")
-			}
+	for {
+		start := time.Now()
+
+		select {
+		case <-t.Reset:
+			fmt.Println("triggered by reset.")
+
+			elapsedTrig := time.Since(start)
+			fmt.Println("elapsed t: ", elapsedTrig)
+
+			tim.Reset(timeout)
+			continue
+		case <-tim.C:
+			fmt.Println("triggered by timer.")
 		}
-	}()
+
+		elapsed := time.Since(start)
+		fmt.Printf("elapsed: %v \n", elapsed)
+
+		tim.Reset(timeout)
+	}
 }

@@ -11,12 +11,12 @@ func main() {
 	aTimer := Timer.New()
 
 	fmt.Println("starting timer.")
-	aTimer.StartTimer()
+	go aTimer.StartTimer()
 
 	go func() {
 		select {
-		case <-time.After(time.Duration(10000) * time.Millisecond):
-			fmt.Println("resetting timer.")
+		case <-time.After(time.Duration(800) * time.Millisecond):
+			fmt.Println("reset timer")
 			aTimer.Reset <- true
 		}
 	}()
